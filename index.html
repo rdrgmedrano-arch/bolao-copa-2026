@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bolão Copa 2026 🏆</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;600&display=swap');
+  :root {
+    --verde:#00843D; --amarelo:#FFD700; --azul:#002776;
+    --bg:#0a0e1a; --bg2:#111827; --bg3:#1a2235; --card:#1e2d45;
+    --border:#2a3f5f; --text:#e8eaf0; --muted:#7a8aaa;
+    --acerto-placar:#00ff88; --acerto-vencedor:#FFD700; --erro:#ff4d6d;
+    --roxo:#a78bfa;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+  header{background:linear-gradient(135deg,var(--azul) 0%,#001a55 50%,var(--verde) 100%);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid var(--amarelo);position:sticky;top:0;z-index:100}
+  .header-title{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;color:var(--amarelo)}
+  .header-title span{color:#fff}
+
+  .ranking-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:8px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .ranking-label{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1px;color:var(--muted)}
+  .ranking-item{display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:5px 12px}
+  .ranking-pos{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--muted)}
+  .ranking-pos.gold{color:#FFD700}.ranking-pos.silver{color:#C0C0C0}.ranking-pos.bronze{color:#CD7F32}
+  .ranking-name{font-weight:600;font-size:13px;min-width:60px}
+  .ranking-pts{font-family:'Roboto Mono',monospace;font-size:15px;font-weight:600;color:var(--amarelo)}
+
+  .participantes-bar{background:var(--bg3);border-bottom:1px solid var(--border);padding:6px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .participantes-label{font-size:11px;color:var(--muted);font-family:'Roboto Mono',monospace}
+  .participante-chip{display:flex;align-items:center;gap:4px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:12px;font-weight:600}
+  .participante-chip .remove-btn{cursor:pointer;color:var(--muted);font-size:14px;line-height:1;padding:0 0 0 4px}
+  .participante-chip .remove-btn:hover{color:var(--erro)}
+  .add-participante{display:flex;align-items:center;gap:6px}
+  .add-participante input{background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;padding:4px 8px;width:110px}
+  .add-participante input:focus{outline:none;border-color:var(--amarelo)}
+  .add-participante button{background:var(--verde);color:#fff;border:none;border-radius:6px;padding:4px 10px;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1px;cursor:pointer}
+
+  .tabs{background:var(--bg2);padding:0 16px;display:flex;gap:2px;border-bottom:1px solid var(--border);overflow-x:auto}
+  .tab{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1px;padding:10px 16px;cursor:pointer;color:var(--muted);border-bottom:3px solid transparent;white-space:nowrap;background:none;border-left:none;border-right:none;border-top:none;transition:all .2s}
+  .tab:hover{color:var(--text)}.tab.active{color:var(--amarelo);border-bottom-color:var(--amarelo)}
+  .tab.painel-tab{color:var(--roxo)}.tab.painel-tab.active{color:var(--roxo);border-bottom-color:var(--roxo)}
+
+  /* MAIN 3 colunas */
+  .main{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;height:calc(100vh - 152px)}
+  .col{overflow-y:auto;border-right:1px solid var(--border);padding:12px}
+  .col:last-child{border-right:none}
+  .col-header{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--amarelo);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg);z-index:10}
+
+  .game-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;cursor:pointer;transition:border-color .2s;position:relative}
+  .game-card:hover{border-color:var(--amarelo)}.game-card.selected{border-color:var(--amarelo);background:#1e2d45ee}
+  .game-meta{font-size:10px;color:var(--muted);font-family:'Roboto Mono',monospace;margin-bottom:6px;display:flex;justify-content:space-between}
+  .game-teams{display:flex;align-items:center;justify-content:space-between;gap:6px}
+  .team-block{display:flex;flex-direction:column;align-items:center;gap:2px;flex:1}
+  .team-block.home{align-items:flex-end}.team-block.away{align-items:flex-start}
+  .team-flag-img{width:28px;height:20px;object-fit:cover;border-radius:2px;border:1px solid rgba(255,255,255,0.1)}
+  .team-name{font-weight:700;font-size:12px}
+  .vs-sep{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--muted);flex-shrink:0}
+  .game-status-badge{position:absolute;top:6px;right:6px;font-size:9px;font-family:'Roboto Mono',monospace;font-weight:600;padding:2px 5px;border-radius:3px}
+  .badge-upcoming{background:#1a2235;color:var(--muted);border:1px solid var(--border)}
+  .badge-done{background:#002200;color:var(--acerto-placar);border:1px solid #004400}
+  .badge-live{background:#3d0000;color:#ff6b6b;border:1px solid #ff000044;animation:pulse 1.5s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+  .grupo-label{font-family:'Bebas Neue',sans-serif;font-size:11px;letter-spacing:2px;color:var(--muted);padding:6px 0 2px}
+
+  .palpite-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px}
+  .palpite-game-info{font-size:11px;color:var(--muted);margin-bottom:6px;font-family:'Roboto Mono',monospace}
+  .palpite-game-name{font-weight:700;font-size:13px;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+  .palpite-jogador{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+  .jogador-label{font-size:12px;font-weight:600;width:70px;color:var(--muted);flex-shrink:0}
+  .placar-inputs{display:flex;align-items:center;gap:5px}
+  .placar-inputs input{width:38px;text-align:center;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Roboto Mono',monospace;font-size:15px;font-weight:600;padding:4px}
+  .placar-inputs input:focus{outline:none;border-color:var(--amarelo)}
+  .placar-sep{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--muted)}
+  .btn-salvar-small{margin-left:6px;padding:3px 9px;background:var(--verde);color:#fff;border:none;border-radius:6px;font-size:11px;cursor:pointer;font-family:'Bebas Neue',sans-serif;letter-spacing:1px}
+  .resultado-form{margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+  .resultado-label{font-size:10px;color:var(--muted);font-family:'Roboto Mono',monospace;margin-bottom:5px;text-transform:uppercase;letter-spacing:1px}
+  .btn-resultado{padding:5px 12px;background:var(--azul);color:var(--amarelo);border:1px solid var(--amarelo);border-radius:6px;font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1px;cursor:pointer}
+
+  .comp-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px}
+  .comp-resultado-real{font-family:'Roboto Mono',monospace;font-size:20px;font-weight:600;text-align:center;color:var(--amarelo);margin:6px 0;background:var(--bg);border-radius:6px;padding:5px}
+  .comp-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;padding:4px 8px;border-radius:6px}
+  .comp-row.acerto-placar{background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.3)}
+  .comp-row.acerto-vencedor{background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.3)}
+  .comp-row.erro{background:rgba(255,77,109,.08);border:1px solid rgba(255,77,109,.2)}
+  .comp-row.sem-palpite{background:var(--bg3);border:1px solid var(--border)}
+  .comp-jogador{font-size:12px;font-weight:600}
+  .comp-placar{font-family:'Roboto Mono',monospace;font-size:13px;font-weight:600}
+  .comp-badge{font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;text-transform:uppercase;letter-spacing:.5px}
+  .badge-placar{background:var(--acerto-placar);color:#000}
+  .badge-vencedor{background:var(--amarelo);color:#000}
+  .badge-erro{background:var(--erro);color:#fff}
+  .badge-sem,.badge-pendente{background:var(--border);color:var(--muted)}
+
+  .no-selection{display:flex;flex-direction:column;align-items:center;justify-content:center;height:200px;color:var(--muted);text-align:center;gap:8px}
+  .no-selection .icon{font-size:32px}.no-selection p{font-size:12px}
+
+  /* PAINEL */
+  .painel-wrap{padding:16px;overflow-y:auto;height:calc(100vh - 152px)}
+  .painel-wrap::-webkit-scrollbar{width:3px}
+  .painel-wrap::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  .section-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--roxo);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+
+  .painel-filtros{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px}
+  .filtro-grupo{display:flex;flex-direction:column;gap:4px}
+  .filtro-label{font-size:10px;color:var(--muted);font-family:'Roboto Mono',monospace;text-transform:uppercase;letter-spacing:1px}
+  .painel-filtros select{background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:6px 10px;font-size:12px;font-family:'Inter',sans-serif;cursor:pointer;min-width:130px}
+  .painel-filtros select:focus{outline:none;border-color:var(--roxo)}
+  .btn-limpar{background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;align-self:flex-end}
+  .btn-limpar:hover{border-color:var(--erro);color:var(--erro)}
+
+  .painel-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:20px}
+  .stat-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center}
+  .stat-val{font-family:'Bebas Neue',sans-serif;font-size:34px;color:var(--amarelo);line-height:1}
+  .stat-label{font-size:11px;color:var(--muted);margin-top:4px}
+
+  .jogador-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:20px}
+  .jog-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px}
+  .jog-card-name{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:var(--amarelo);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+  .jog-card-pts{font-family:'Roboto Mono',monospace;font-size:22px;font-weight:700}
+  .jog-stat-row{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:1px solid rgba(42,63,95,0.4)}
+  .jog-stat-row:last-child{border:none}
+  .jog-stat-val{font-family:'Roboto Mono',monospace;font-weight:600}
+  .jog-bar{height:4px;border-radius:2px;margin-top:8px;background:var(--bg3)}
+  .jog-bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--verde),var(--amarelo));transition:width .5s}
+
+  .painel-table-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border)}
+  .painel-table{width:100%;border-collapse:collapse;font-size:12px}
+  .painel-table th{background:var(--bg3);color:var(--muted);font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:1px;padding:9px 12px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
+  .painel-table td{padding:8px 12px;border-bottom:1px solid rgba(42,63,95,0.4);vertical-align:middle;white-space:nowrap}
+  .painel-table tr:last-child td{border-bottom:none}
+  .painel-table tr:hover td{background:rgba(255,215,0,0.02)}
+  .pt-jogo{font-weight:600}
+  .pt-resultado{font-family:'Roboto Mono',monospace;font-weight:700;color:var(--amarelo)}
+  .pt-palpite{font-family:'Roboto Mono',monospace}
+  .pt-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;text-transform:uppercase;display:inline-block;white-space:nowrap}
+  .ptb-placar{background:var(--acerto-placar);color:#000}
+  .ptb-vencedor{background:var(--amarelo);color:#000}
+  .ptb-erro{background:var(--erro);color:#fff}
+  .ptb-sem{background:var(--border);color:var(--muted)}
+  .ptb-aguard{background:var(--bg3);color:var(--muted);border:1px solid var(--border)}
+  .empty-row td{text-align:center;color:var(--muted);padding:24px;font-size:13px}
+
+  .col::-webkit-scrollbar{width:3px}
+  .col::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+  input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
+  @media(max-width:768px){
+    .main{grid-template-columns:1fr;height:auto}
+    .col{border-right:none;border-bottom:1px solid var(--border);height:380px}
+    .painel-wrap{height:auto}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-title">Bolão <span>Copa</span> 2026 🏆</div>
+  <div id="sync-status" style="font-size:11px;color:#7a8aaa;font-family:'Roboto Mono',monospace">⏳ conectando...</div>
+</header>
+
+<div class="ranking-bar">
+  <span class="ranking-label">🏆 Ranking</span>
+  <div id="ranking-container" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+  <span style="margin-left:auto;font-size:10px;color:var(--muted);font-family:'Roboto Mono',monospace">
+    <span style="color:var(--acerto-placar)">■</span> Placar exato = 3pts &nbsp;
+    <span style="color:var(--amarelo)">■</span> Vencedor = 1pt
+  </span>
+</div>
+
+<div class="participantes-bar">
+  <span class="participantes-label">👥 Participantes:</span>
+  <div id="chips-container" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+  <div class="add-participante">
+    <input type="text" id="novo-participante" placeholder="Nome..." maxlength="20" onkeydown="if(event.key==='Enter')addParticipante()">
+    <button onclick="addParticipante()">+ Adicionar</button>
+  </div>
+</div>
+
+<div class="tabs" id="tabs-bar">
+  <button class="tab active" onclick="setFase('grupos',this)">Fase de Grupos</button>
+  <button class="tab" onclick="setFase('r32',this)">Oitavas (R32)</button>
+  <button class="tab" onclick="setFase('r16',this)">Round of 16</button>
+  <button class="tab" onclick="setFase('quartas',this)">Quartas</button>
+  <button class="tab" onclick="setFase('semi',this)">Semifinais</button>
+  <button class="tab" onclick="setFase('bronze',this)">3º Lugar</button>
+  <button class="tab" onclick="setFase('final',this)">Final</button>
+  <button class="tab painel-tab" onclick="setPainel(this)" style="margin-left:auto">📊 Painel</button>
+</div>
+
+<!-- MAIN 3 colunas -->
+<div class="main" id="main-cols">
+  <div class="col"><div class="col-header">⚽ Jogos</div><div id="jogos-list"><div class="no-selection"><div class="icon">⏳</div><p>Carregando...</p></div></div></div>
+  <div class="col"><div class="col-header">🎯 Palpites</div><div id="palpites-panel"><div class="no-selection"><div class="icon">👈</div><p>Selecione um jogo ao lado</p></div></div></div>
+  <div class="col"><div class="col-header">📊 Comparação</div><div id="comp-panel"><div class="no-selection"><div class="icon">📋</div><p>Selecione um jogo para ver<br>os palpites comparados</p></div></div></div>
+</div>
+
+<!-- PAINEL -->
+<div class="painel-wrap" id="painel-wrap" style="display:none">
+  <div class="section-title">📊 Painel de Palpites</div>
+
+  <!-- Filtros -->
+  <div class="painel-filtros">
+    <div class="filtro-grupo">
+      <span class="filtro-label">Participante</span>
+      <select id="f-jogador" onchange="renderPainel()"><option value="">Todos</option></select>
+    </div>
+    <div class="filtro-grupo">
+      <span class="filtro-label">Fase</span>
+      <select id="f-fase" onchange="renderPainel()">
+        <option value="">Todas</option>
+        <option value="grupos">Fase de Grupos</option>
+        <option value="r32">Oitavas R32</option>
+        <option value="r16">Round of 16</option>
+        <option value="quartas">Quartas</option>
+        <option value="semi">Semifinais</option>
+        <option value="bronze">3º Lugar</option>
+        <option value="final">Final</option>
+      </select>
+    </div>
+    <div class="filtro-grupo">
+      <span class="filtro-label">Time</span>
+      <select id="f-time" onchange="renderPainel()"><option value="">Todos</option></select>
+    </div>
+    <div class="filtro-grupo">
+      <span class="filtro-label">Resultado</span>
+      <select id="f-resultado" onchange="renderPainel()">
+        <option value="">Todos</option>
+        <option value="placar">🎯 Placar Exato</option>
+        <option value="vencedor">✓ Acertou Vencedor</option>
+        <option value="erro">✗ Errou</option>
+        <option value="sem">Sem Palpite</option>
+        <option value="pendente">Aguardando</option>
+      </select>
+    </div>
+    <button class="btn-limpar" onclick="limparFiltros()">✕ Limpar</button>
+  </div>
+
+  <!-- Stats gerais -->
+  <div class="section-title" style="font-size:13px;color:var(--muted);border:none;margin-bottom:8px;padding:0">ESTATÍSTICAS GERAIS</div>
+  <div class="painel-stats" id="painel-stats"></div>
+
+  <!-- Cards por jogador -->
+  <div class="section-title" style="font-size:13px;color:var(--muted);border:none;margin-bottom:8px;padding:0">POR PARTICIPANTE</div>
+  <div class="jogador-cards" id="jogador-cards"></div>
+
+  <!-- Tabela -->
+  <div class="section-title" style="font-size:13px;color:var(--muted);border:none;margin-bottom:8px;padding:0">HISTÓRICO DE JOGOS</div>
+  <div class="painel-table-wrap">
+    <table class="painel-table">
+      <thead id="painel-thead"></thead>
+      <tbody id="painel-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const app = initializeApp({
+  apiKey:"AIzaSyBdJlBF2WSF6w2lppU1sM4SPh-p6cE-mRA",
+  authDomain:"copa-2026-album-79fb4.firebaseapp.com",
+  databaseURL:"https://copa-2026-album-79fb4-default-rtdb.firebaseio.com",
+  projectId:"copa-2026-album-79fb4",
+  storageBucket:"copa-2026-album-79fb4.firebasestorage.app",
+  messagingSenderId:"1093315680173",
+  appId:"1:1093315680173:web:3709411715457eb6357324"
+});
+const db = getDatabase(app);
+
+// ─── FLAGS ───────────────────────────────────────────────────────────────────
+const FLAG_CODES = {
+  'México':'mx','África do Sul':'za','Coreia do Sul':'kr','Tchéquia':'cz',
+  'Canadá':'ca','Bósnia':'ba','Catar':'qa','Suíça':'ch','Brasil':'br',
+  'Marrocos':'ma','Haiti':'ht','Escócia':'gb-sct','EUA':'us','Paraguai':'py',
+  'Austrália':'au','Turquia':'tr','Alemanha':'de','Curaçao':'cw',
+  'Costa do Marfim':'ci','Equador':'ec','Holanda':'nl','Japão':'jp',
+  'Suécia':'se','Tunísia':'tn','Bélgica':'be','Egito':'eg','Irã':'ir',
+  'Nova Zelândia':'nz','Espanha':'es','Cabo Verde':'cv','Arábia Saudita':'sa',
+  'Uruguai':'uy','França':'fr','Senegal':'sn','Iraque':'iq','Noruega':'no',
+  'Argentina':'ar','Argélia':'dz','Áustria':'at','Jordânia':'jo',
+  'Portugal':'pt','Congo DR':'cd','Uzbequistão':'uz','Colômbia':'co',
+  'Inglaterra':'gb-eng','Croácia':'hr','Gana':'gh','Panamá':'pa',
+};
+function flagImg(team){
+  const code=FLAG_CODES[team];
+  if(!code) return '<span style="font-size:16px">🏳️</span>';
+  return `<img src="https://flagcdn.com/16x12/${code}.png" class="team-flag-img" alt="${team}" onerror="this.style.display='none'">`;
+}
+
+// ─── JOGOS ───────────────────────────────────────────────────────────────────
+const JOGOS = {
+  grupos:[
+    {id:'ga1',grupo:'A',data:'11/06',hora:'16:00',casa:'México',fora:'África do Sul',estadio:'Cidade do México, MEX'},
+    {id:'ga2',grupo:'A',data:'11/06',hora:'23:00',casa:'Coreia do Sul',fora:'Tchéquia',estadio:'Guadalajara, MEX'},
+    {id:'ga3',grupo:'B',data:'12/06',hora:'16:00',casa:'Canadá',fora:'Bósnia',estadio:'Toronto, CAN'},
+    {id:'ga4',grupo:'B',data:'12/06',hora:'22:00',casa:'EUA',fora:'Paraguai',estadio:'Los Angeles, EUA'},
+    {id:'ga5',grupo:'C',data:'13/06',hora:'16:00',casa:'Catar',fora:'Suíça',estadio:'San Francisco, EUA'},
+    {id:'ga6',grupo:'C',data:'13/06',hora:'19:00',casa:'Brasil',fora:'Marrocos',estadio:'New Jersey, EUA'},
+    {id:'ga7',grupo:'C',data:'13/06',hora:'22:00',casa:'Haiti',fora:'Escócia',estadio:'Boston, EUA'},
+    {id:'ga8',grupo:'D',data:'14/06',hora:'01:00',casa:'Austrália',fora:'Turquia',estadio:'Vancouver, CAN'},
+    {id:'ga9',grupo:'E',data:'14/06',hora:'14:00',casa:'Alemanha',fora:'Curaçao',estadio:'Houston, EUA'},
+    {id:'ga10',grupo:'E',data:'14/06',hora:'17:00',casa:'Holanda',fora:'Japão',estadio:'Dallas, EUA'},
+    {id:'ga11',grupo:'E',data:'14/06',hora:'20:00',casa:'Costa do Marfim',fora:'Equador',estadio:'Filadélfia, EUA'},
+    {id:'ga12',grupo:'F',data:'14/06',hora:'23:00',casa:'Suécia',fora:'Tunísia',estadio:'Monterrey, MEX'},
+    {id:'ga13',grupo:'H',data:'15/06',hora:'13:00',casa:'Espanha',fora:'Cabo Verde',estadio:'Atlanta, EUA'},
+    {id:'ga14',grupo:'G',data:'15/06',hora:'16:00',casa:'Bélgica',fora:'Egito',estadio:'Vancouver, CAN'},
+    {id:'ga15',grupo:'H',data:'15/06',hora:'19:00',casa:'Arábia Saudita',fora:'Uruguai',estadio:'Miami, EUA'},
+    {id:'ga16',grupo:'G',data:'15/06',hora:'22:00',casa:'Irã',fora:'Nova Zelândia',estadio:'Los Angeles, EUA'},
+    {id:'ga17',grupo:'I',data:'16/06',hora:'16:00',casa:'França',fora:'Senegal',estadio:'New Jersey, EUA'},
+    {id:'ga18',grupo:'I',data:'16/06',hora:'19:00',casa:'Iraque',fora:'Noruega',estadio:'Boston, EUA'},
+    {id:'ga19',grupo:'J',data:'16/06',hora:'22:00',casa:'Argentina',fora:'Argélia',estadio:'Kansas City, EUA'},
+    {id:'ga20',grupo:'J',data:'17/06',hora:'01:00',casa:'Áustria',fora:'Jordânia',estadio:'San Francisco, EUA'},
+    {id:'ga21',grupo:'K',data:'17/06',hora:'14:00',casa:'Portugal',fora:'Congo DR',estadio:'Houston, EUA'},
+    {id:'ga22',grupo:'L',data:'17/06',hora:'17:00',casa:'Inglaterra',fora:'Croácia',estadio:'Dallas, EUA'},
+    {id:'ga23',grupo:'L',data:'17/06',hora:'20:00',casa:'Gana',fora:'Panamá',estadio:'Toronto, CAN'},
+    {id:'ga24',grupo:'K',data:'17/06',hora:'23:00',casa:'Uzbequistão',fora:'Colômbia',estadio:'Cidade do México, MEX'},
+    {id:'ga25',grupo:'A',data:'18/06',hora:'13:00',casa:'Tchéquia',fora:'África do Sul',estadio:'Atlanta, EUA'},
+    {id:'ga26',grupo:'B',data:'18/06',hora:'16:00',casa:'Suíça',fora:'Bósnia',estadio:'Los Angeles, EUA'},
+    {id:'ga27',grupo:'B',data:'18/06',hora:'19:00',casa:'Canadá',fora:'Catar',estadio:'Vancouver, CAN'},
+    {id:'ga28',grupo:'A',data:'18/06',hora:'22:00',casa:'México',fora:'Coreia do Sul',estadio:'Guadalajara, MEX'},
+    {id:'ga29',grupo:'D',data:'19/06',hora:'19:00',casa:'EUA',fora:'Austrália',estadio:'Seattle, EUA'},
+    {id:'ga30',grupo:'C',data:'19/06',hora:'19:00',casa:'Escócia',fora:'Marrocos',estadio:'Boston, EUA'},
+    {id:'ga31',grupo:'C',data:'19/06',hora:'21:30',casa:'Brasil',fora:'Haiti',estadio:'Filadélfia, EUA'},
+    {id:'ga32',grupo:'D',data:'20/06',hora:'00:00',casa:'Turquia',fora:'Paraguai',estadio:'San Francisco, EUA'},
+    {id:'ga33',grupo:'F',data:'20/06',hora:'14:00',casa:'Holanda',fora:'Suécia',estadio:'Houston, EUA'},
+    {id:'ga34',grupo:'E',data:'20/06',hora:'17:00',casa:'Alemanha',fora:'Costa do Marfim',estadio:'Toronto, CAN'},
+    {id:'ga35',grupo:'E',data:'21/06',hora:'00:00',casa:'Equador',fora:'Curaçao',estadio:'Kansas City, EUA'},
+    {id:'ga36',grupo:'F',data:'21/06',hora:'01:00',casa:'Tunísia',fora:'Japão',estadio:'Monterrey, MEX'},
+    {id:'ga37',grupo:'H',data:'21/06',hora:'13:00',casa:'Espanha',fora:'Arábia Saudita',estadio:'Atlanta, EUA'},
+    {id:'ga38',grupo:'G',data:'21/06',hora:'16:00',casa:'Bélgica',fora:'Irã',estadio:'Los Angeles, EUA'},
+    {id:'ga39',grupo:'H',data:'21/06',hora:'19:00',casa:'Uruguai',fora:'Cabo Verde',estadio:'Miami, EUA'},
+    {id:'ga40',grupo:'G',data:'21/06',hora:'22:00',casa:'Nova Zelândia',fora:'Egito',estadio:'Vancouver, CAN'},
+    {id:'ga41',grupo:'J',data:'22/06',hora:'14:00',casa:'Argentina',fora:'Áustria',estadio:'Dallas, EUA'},
+    {id:'ga42',grupo:'I',data:'22/06',hora:'18:00',casa:'França',fora:'Iraque',estadio:'Filadélfia, EUA'},
+    {id:'ga43',grupo:'I',data:'22/06',hora:'21:00',casa:'Noruega',fora:'Senegal',estadio:'New Jersey, EUA'},
+    {id:'ga44',grupo:'J',data:'23/06',hora:'00:00',casa:'Jordânia',fora:'Argélia',estadio:'San Francisco, EUA'},
+    {id:'ga45',grupo:'K',data:'23/06',hora:'14:00',casa:'Portugal',fora:'Uzbequistão',estadio:'Houston, EUA'},
+    {id:'ga46',grupo:'L',data:'23/06',hora:'17:00',casa:'Inglaterra',fora:'Gana',estadio:'Boston, EUA'},
+    {id:'ga47',grupo:'L',data:'23/06',hora:'20:00',casa:'Panamá',fora:'Croácia',estadio:'Toronto, CAN'},
+    {id:'ga48',grupo:'K',data:'23/06',hora:'23:00',casa:'Colômbia',fora:'Congo DR',estadio:'Guadalajara, MEX'},
+    {id:'ga49',grupo:'B',data:'24/06',hora:'16:00',casa:'Suíça',fora:'Canadá',estadio:'Vancouver, CAN'},
+    {id:'ga50',grupo:'B',data:'24/06',hora:'16:00',casa:'Bósnia',fora:'Catar',estadio:'Seattle, EUA'},
+    {id:'ga51',grupo:'C',data:'24/06',hora:'19:00',casa:'Escócia',fora:'Brasil',estadio:'Miami, EUA'},
+    {id:'ga52',grupo:'C',data:'24/06',hora:'19:00',casa:'Marrocos',fora:'Haiti',estadio:'Atlanta, EUA'},
+    {id:'ga53',grupo:'A',data:'24/06',hora:'22:00',casa:'Tchéquia',fora:'México',estadio:'Cidade do México, MEX'},
+    {id:'ga54',grupo:'A',data:'24/06',hora:'22:00',casa:'África do Sul',fora:'Coreia do Sul',estadio:'Monterrey, MEX'},
+    {id:'ga55',grupo:'E',data:'25/06',hora:'17:00',casa:'Equador',fora:'Alemanha',estadio:'New Jersey, EUA'},
+    {id:'ga56',grupo:'E',data:'25/06',hora:'17:00',casa:'Curaçao',fora:'Costa do Marfim',estadio:'Filadélfia, EUA'},
+    {id:'ga57',grupo:'F',data:'25/06',hora:'20:00',casa:'Japão',fora:'Suécia',estadio:'Dallas, EUA'},
+    {id:'ga58',grupo:'F',data:'25/06',hora:'20:00',casa:'Tunísia',fora:'Holanda',estadio:'Kansas City, EUA'},
+    {id:'ga59',grupo:'D',data:'25/06',hora:'23:00',casa:'Turquia',fora:'EUA',estadio:'Los Angeles, EUA'},
+    {id:'ga60',grupo:'D',data:'25/06',hora:'23:00',casa:'Paraguai',fora:'Austrália',estadio:'San Francisco, EUA'},
+    {id:'ga61',grupo:'I',data:'26/06',hora:'16:00',casa:'Noruega',fora:'França',estadio:'Boston, EUA'},
+    {id:'ga62',grupo:'I',data:'26/06',hora:'16:00',casa:'Senegal',fora:'Iraque',estadio:'Toronto, CAN'},
+    {id:'ga63',grupo:'H',data:'26/06',hora:'21:00',casa:'Cabo Verde',fora:'Arábia Saudita',estadio:'Houston, EUA'},
+    {id:'ga64',grupo:'H',data:'26/06',hora:'21:00',casa:'Uruguai',fora:'Espanha',estadio:'Guadalajara, MEX'},
+    {id:'ga65',grupo:'G',data:'27/06',hora:'00:00',casa:'Egito',fora:'Irã',estadio:'Seattle, EUA'},
+    {id:'ga66',grupo:'G',data:'27/06',hora:'00:00',casa:'Nova Zelândia',fora:'Bélgica',estadio:'Vancouver, CAN'},
+    {id:'ga67',grupo:'L',data:'27/06',hora:'18:00',casa:'Panamá',fora:'Inglaterra',estadio:'New Jersey, EUA'},
+    {id:'ga68',grupo:'L',data:'27/06',hora:'18:00',casa:'Croácia',fora:'Gana',estadio:'Filadélfia, EUA'},
+    {id:'ga69',grupo:'K',data:'27/06',hora:'20:30',casa:'Colômbia',fora:'Portugal',estadio:'Miami, EUA'},
+    {id:'ga70',grupo:'K',data:'27/06',hora:'20:30',casa:'Congo DR',fora:'Uzbequistão',estadio:'Atlanta, EUA'},
+    {id:'ga71',grupo:'J',data:'27/06',hora:'23:00',casa:'Argélia',fora:'Áustria',estadio:'Kansas City, EUA'},
+    {id:'ga72',grupo:'J',data:'27/06',hora:'23:00',casa:'Jordânia',fora:'Argentina',estadio:'Dallas, EUA'},
+  ],
+  r32:[
+    {id:'r32a',data:'28/06',hora:'16:00',casa:'TBD',fora:'TBD',estadio:'Los Angeles, EUA'},
+    {id:'r32b',data:'29/06',hora:'16:00',casa:'TBD',fora:'TBD',estadio:'Houston, EUA'},
+    {id:'r32c',data:'29/06',hora:'17:30',casa:'TBD',fora:'TBD',estadio:'Boston, EUA'},
+    {id:'r32d',data:'29/06',hora:'22:00',casa:'TBD',fora:'TBD',estadio:'Monterrey, MEX'},
+    {id:'r32e',data:'30/06',hora:'14:00',casa:'TBD',fora:'TBD',estadio:'Dallas, EUA'},
+    {id:'r32f',data:'30/06',hora:'18:00',casa:'TBD',fora:'TBD',estadio:'New Jersey, EUA'},
+    {id:'r32g',data:'30/06',hora:'22:00',casa:'TBD',fora:'TBD',estadio:'Cidade do México, MEX'},
+    {id:'r32h',data:'01/07',hora:'13:00',casa:'TBD',fora:'TBD',estadio:'Atlanta, EUA'},
+    {id:'r32i',data:'01/07',hora:'17:00',casa:'TBD',fora:'TBD',estadio:'Seattle, EUA'},
+    {id:'r32j',data:'01/07',hora:'17:00',casa:'TBD',fora:'TBD',estadio:'San Francisco, EUA'},
+    {id:'r32k',data:'02/07',hora:'16:00',casa:'TBD',fora:'TBD',estadio:'Los Angeles, EUA'},
+    {id:'r32l',data:'02/07',hora:'20:00',casa:'TBD',fora:'TBD',estadio:'Toronto, CAN'},
+    {id:'r32m',data:'03/07',hora:'00:00',casa:'TBD',fora:'TBD',estadio:'Vancouver, CAN'},
+    {id:'r32n',data:'03/07',hora:'15:00',casa:'TBD',fora:'TBD',estadio:'Dallas, EUA'},
+    {id:'r32o',data:'03/07',hora:'19:00',casa:'TBD',fora:'TBD',estadio:'Miami, EUA'},
+    {id:'r32p',data:'03/07',hora:'22:30',casa:'TBD',fora:'TBD',estadio:'Kansas City, EUA'},
+  ],
+  r16:[
+    {id:'r16a',data:'04/07',hora:'14:00',casa:'TBD',fora:'TBD',estadio:'Houston, EUA'},
+    {id:'r16b',data:'04/07',hora:'18:00',casa:'TBD',fora:'TBD',estadio:'Filadélfia, EUA'},
+    {id:'r16c',data:'05/07',hora:'17:00',casa:'TBD',fora:'TBD',estadio:'New Jersey, EUA'},
+    {id:'r16d',data:'05/07',hora:'21:00',casa:'TBD',fora:'TBD',estadio:'Cidade do México, MEX'},
+    {id:'r16e',data:'06/07',hora:'16:00',casa:'TBD',fora:'TBD',estadio:'Dallas, EUA'},
+    {id:'r16f',data:'06/07',hora:'21:00',casa:'TBD',fora:'TBD',estadio:'Seattle, EUA'},
+    {id:'r16g',data:'07/07',hora:'13:00',casa:'TBD',fora:'TBD',estadio:'Atlanta, EUA'},
+    {id:'r16h',data:'07/07',hora:'16:00',casa:'TBD',fora:'TBD',estadio:'Vancouver, CAN'},
+  ],
+  quartas:[
+    {id:'q1',data:'09/07',hora:'17:00',casa:'TBD',fora:'TBD',estadio:'Boston, EUA'},
+    {id:'q2',data:'10/07',hora:'16:00',casa:'TBD',fora:'TBD',estadio:'Los Angeles, EUA'},
+    {id:'q3',data:'11/07',hora:'18:00',casa:'TBD',fora:'TBD',estadio:'Miami, EUA'},
+    {id:'q4',data:'11/07',hora:'22:00',casa:'TBD',fora:'TBD',estadio:'Kansas City, EUA'},
+  ],
+  semi:[
+    {id:'s1',data:'14/07',hora:'16:00',casa:'TBD',fora:'TBD',estadio:'Dallas, EUA'},
+    {id:'s2',data:'15/07',hora:'16:00',casa:'TBD',fora:'TBD',estadio:'Atlanta, EUA'},
+  ],
+  bronze:[{id:'b1',data:'18/07',hora:'18:00',casa:'TBD',fora:'TBD',estadio:'Miami, EUA'}],
+  final:[{id:'f1',data:'19/07',hora:'16:00',casa:'TBD',fora:'TBD',estadio:'New Jersey, EUA'}],
+};
+
+const TODOS_JOGOS = Object.entries(JOGOS).flatMap(([fase,jogos])=>jogos.map(j=>({...j,fase})));
+const TODOS_TIMES = [...new Set(TODOS_JOGOS.flatMap(j=>[j.casa,j.fora]).filter(t=>t!=='TBD'))].sort();
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let state = {
+  fase:'grupos', selectedGame:null, modoPainel:false,
+  participantes:['Rodrigo','Rafael','Leo'],
+  palpites:{}, resultados:{},
+};
+
+// ─── FIREBASE ────────────────────────────────────────────────────────────────
+onValue(ref(db,'bolao2026'), snap=>{
+  const d=snap.val()||{};
+  state.palpites=d.palpites||{};
+  state.resultados=d.resultados||{};
+  if(d.participantes) state.participantes=d.participantes;
+  document.getElementById('sync-status').textContent='✅ sincronizado';
+  render();
+}, ()=>{ document.getElementById('sync-status').textContent='❌ erro'; });
+
+async function fbSet(path,val){
+  document.getElementById('sync-status').textContent='⏳ salvando...';
+  await set(ref(db,path),val);
+}
+
+// ─── PONTUAÇÃO ───────────────────────────────────────────────────────────────
+function calcPontos(filtroJogs){
+  const pts={};
+  const jogs=filtroJogs||state.participantes;
+  jogs.forEach(p=>pts[p]=0);
+  for(const[gid,res] of Object.entries(state.resultados)){
+    const ps=state.palpites[gid]||{};
+    for(const jog of jogs){
+      const p=ps[jog];
+      if(!p) continue;
+      if(p.c===res.c&&p.f===res.f) pts[jog]+=3;
+      else if((p.c>p.f&&res.c>res.f)||(p.c<p.f&&res.c<res.f)||(p.c===p.f&&res.c===res.f)) pts[jog]+=1;
+    }
+  }
+  return pts;
+}
+function getRT(p,res){
+  if(!res) return 'pendente';
+  if(!p) return 'sem';
+  if(p.c===res.c&&p.f===res.f) return 'placar';
+  if((p.c>p.f&&res.c>res.f)||(p.c<p.f&&res.c<res.f)||(p.c===p.f&&res.c===res.f)) return 'vencedor';
+  return 'erro';
+}
+function jogadorStats(jog){
+  let jogos=0,acertouPlacar=0,acertouVencedor=0,errou=0,semPalpite=0,total=0;
+  for(const[gid,res] of Object.entries(state.resultados)){
+    jogos++;
+    const p=(state.palpites[gid]||{})[jog];
+    const t=getRT(p,res);
+    if(t==='placar'){acertouPlacar++;total+=3;}
+    else if(t==='vencedor'){acertouVencedor++;total+=1;}
+    else if(t==='erro') errou++;
+    else semPalpite++;
+  }
+  const aproveitamento=jogos>0?Math.round((total/(jogos*3))*100):0;
+  return{jogos,acertouPlacar,acertouVencedor,errou,semPalpite,total,aproveitamento};
+}
+
+// ─── RENDER GERAL ────────────────────────────────────────────────────────────
+function render(){
+  renderRanking(); renderChips();
+  populateFiltros();
+  if(state.modoPainel){ renderPainel(); }
+  else{ renderJogos(); if(state.selectedGame){ renderPalpites(state.selectedGame); renderComp(state.selectedGame); } }
+}
+
+function renderRanking(){
+  const pts=calcPontos();
+  const sorted=state.participantes.slice().sort((a,b)=>(pts[b]||0)-(pts[a]||0));
+  const cls=['gold','silver','bronze'];const em=['🥇','🥈','🥉'];
+  document.getElementById('ranking-container').innerHTML=sorted.map((j,i)=>`
+    <div class="ranking-item">
+      <span class="ranking-pos ${cls[i]||''}">${em[i]||'🏅'}</span>
+      <span class="ranking-name">${j}</span>
+      <span class="ranking-pts">${pts[j]||0}pts</span>
+    </div>`).join('');
+}
+
+function renderChips(){
+  document.getElementById('chips-container').innerHTML=state.participantes.map(p=>`
+    <div class="participante-chip">${p}<span class="remove-btn" onclick="removeParticipante('${p}')">×</span></div>`).join('');
+}
+
+function populateFiltros(){
+  const fj=document.getElementById('f-jogador');
+  const ft=document.getElementById('f-time');
+  if(!fj||!ft) return;
+  const curJog=fj.value, curTime=ft.value;
+  fj.innerHTML='<option value="">Todos</option>'+state.participantes.map(p=>`<option value="${p}">${p}</option>`).join('');
+  ft.innerHTML='<option value="">Todos</option>'+TODOS_TIMES.map(t=>`<option value="${t}">${t}</option>`).join('');
+  fj.value=curJog; ft.value=curTime;
+}
+
+// ─── RENDER JOGOS ────────────────────────────────────────────────────────────
+function renderJogos(){
+  const jogos=JOGOS[state.fase];
+  let html='',lastGrp='';
+  jogos.forEach(j=>{
+    if(j.grupo&&j.grupo!==lastGrp){html+=`<div class="grupo-label">Grupo ${j.grupo}</div>`;lastGrp=j.grupo;}
+    const res=state.resultados[j.id];
+    const isTBD=j.casa==='TBD';
+    const sel=state.selectedGame?.id===j.id;
+    // Detecta se está live (tem resultado mas pode ser parcial — badge especial)
+    const badgeCls=res?'badge-done':'badge-upcoming';
+    const badgeTxt=res?`${res.c}–${res.f}`:j.hora;
+    html+=`<div class="game-card${sel?' selected':''}" onclick="selectGame('${state.fase}','${j.id}')">
+      <span class="game-status-badge ${badgeCls}">${badgeTxt}</span>
+      <div class="game-meta"><span>${j.data} • BRT</span><span>${j.estadio}</span></div>
+      <div class="game-teams">
+        <div class="team-block home">${isTBD?'<span style="color:var(--muted);font-size:11px">A definir</span>':flagImg(j.casa)+'<span class="team-name">'+j.casa+'</span>'}</div>
+        <span class="vs-sep">×</span>
+        <div class="team-block away">${isTBD?'<span style="color:var(--muted);font-size:11px">A definir</span>':flagImg(j.fora)+'<span class="team-name">'+j.fora+'</span>'}</div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('jogos-list').innerHTML=html;
+}
+
+function renderPalpites(jogo){
+  const ps=state.palpites[jogo.id]||{};
+  const res=state.resultados[jogo.id];
+  const isTBD=jogo.casa==='TBD';
+  document.getElementById('palpites-panel').innerHTML=`
+    <div class="palpite-card">
+      <div class="palpite-game-info">${jogo.data} • ${jogo.hora} BRT • ${jogo.estadio}</div>
+      <div class="palpite-game-name">${isTBD?'A definir × A definir':flagImg(jogo.casa)+' '+jogo.casa+' × '+jogo.fora+' '+flagImg(jogo.fora)}</div>
+      ${state.participantes.map(jog=>{const p=ps[jog];return`
+        <div class="palpite-jogador">
+          <span class="jogador-label">${jog}</span>
+          <div class="placar-inputs">
+            <input type="number" id="p_${jog}_c" min="0" max="20" value="${p!=null?p.c:''}" placeholder="0">
+            <span class="placar-sep">×</span>
+            <input type="number" id="p_${jog}_f" min="0" max="20" value="${p!=null?p.f:''}" placeholder="0">
+          </div>
+          <button class="btn-salvar-small" onclick="salvarPalpite('${jogo.id}','${jog}')">Salvar</button>
+        </div>`;}).join('')}
+      <div class="resultado-form">
+        <div class="resultado-label">📋 Resultado Real (admin)</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input type="number" id="res_c" min="0" max="20" value="${res!=null?res.c:''}" placeholder="0" style="width:38px;text-align:center;background:var(--bg);border:1px solid var(--amarelo);border-radius:6px;color:var(--amarelo);font-family:'Roboto Mono',monospace;font-size:15px;font-weight:600;padding:4px">
+          <span class="placar-sep" style="color:var(--amarelo)">×</span>
+          <input type="number" id="res_f" min="0" max="20" value="${res!=null?res.f:''}" placeholder="0" style="width:38px;text-align:center;background:var(--bg);border:1px solid var(--amarelo);border-radius:6px;color:var(--amarelo);font-family:'Roboto Mono',monospace;font-size:15px;font-weight:600;padding:4px">
+          <button class="btn-resultado" onclick="salvarResultado('${jogo.id}')">✓ Confirmar</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderComp(jogo){
+  const ps=state.palpites[jogo.id]||{};
+  const res=state.resultados[jogo.id];
+  const pts=calcPontos();
+  const badges={
+    placar:`<span class="comp-badge badge-placar">+3pts 🎯</span>`,
+    vencedor:`<span class="comp-badge badge-vencedor">+1pt ✓</span>`,
+    erro:`<span class="comp-badge badge-erro">0pts ✗</span>`,
+    sem:`<span class="comp-badge badge-sem">Sem palpite</span>`,
+    pendente:`<span class="comp-badge badge-pendente">Aguardando</span>`,
+  };
+  const em=['🥇','🥈','🥉'];
+  document.getElementById('comp-panel').innerHTML=`
+    <div class="comp-card">
+      <div style="font-weight:700;font-size:12px;margin-bottom:4px">${jogo.casa} × ${jogo.fora}</div>
+      <div class="comp-resultado-real">${res?`${res.c} — ${res.f}`:'Aguardando resultado'}</div>
+      ${state.participantes.map(jog=>{const p=ps[jog];const tipo=getRT(p,res);return`
+        <div class="comp-row ${tipo==='pendente'?'sem-palpite':tipo}">
+          <span class="comp-jogador">${jog}</span>
+          <span class="comp-placar">${p!=null?`${p.c} × ${p.f}`:'— × —'}</span>
+          ${badges[tipo]}
+        </div>`;}).join('')}
+    </div>
+    <div class="comp-card">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1px;color:var(--muted);margin-bottom:8px">Placar geral</div>
+      ${state.participantes.slice().sort((a,b)=>(pts[b]||0)-(pts[a]||0)).map((j,i)=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border)">
+          <span style="font-size:13px">${em[i]||'🏅'} ${j}</span>
+          <span style="font-family:'Roboto Mono',monospace;font-size:15px;font-weight:700;color:var(--amarelo)">${pts[j]||0}pts</span>
+        </div>`).join('')}
+    </div>`;
+}
+
+// ─── PAINEL ──────────────────────────────────────────────────────────────────
+window.renderPainel = function(){
+  const fJog=document.getElementById('f-jogador')?.value||'';
+  const fFase=document.getElementById('f-fase')?.value||'';
+  const fTime=document.getElementById('f-time')?.value||'';
+  const fRes=document.getElementById('f-resultado')?.value||'';
+
+  // Filtra jogos
+  let jogos=TODOS_JOGOS.filter(j=>j.casa!=='TBD');
+  if(fFase) jogos=jogos.filter(j=>j.fase===fFase);
+  if(fTime) jogos=jogos.filter(j=>j.casa===fTime||j.fora===fTime);
+
+  // Jogadores filtrados
+  const jogs=fJog?[fJog]:state.participantes;
+
+  // Filtra por resultado
+  if(fRes) jogos=jogos.filter(j=>{
+    const res=state.resultados[j.id];
+    return jogs.some(jog=>getRT((state.palpites[j.id]||{})[jog],res)===fRes);
+  });
+
+  // Stats gerais
+  const jogosComRes=jogos.filter(j=>state.resultados[j.id]);
+  const totalPalpites=jogos.reduce((acc,j)=>acc+jogs.filter(jog=>(state.palpites[j.id]||{})[jog]!=null).length,0);
+  const totalAcertos=jogos.reduce((acc,j)=>{
+    const res=state.resultados[j.id]; if(!res) return acc;
+    return acc+jogs.filter(jog=>getRT((state.palpites[j.id]||{})[jog],res)==='placar'||getRT((state.palpites[j.id]||{})[jog],res)==='vencedor').length;
+  },0);
+
+  document.getElementById('painel-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-val">${jogos.length}</div><div class="stat-label">Jogos filtrados</div></div>
+    <div class="stat-card"><div class="stat-val">${jogosComRes.length}</div><div class="stat-label">Com resultado</div></div>
+    <div class="stat-card"><div class="stat-val">${totalPalpites}</div><div class="stat-label">Palpites dados</div></div>
+    <div class="stat-card"><div class="stat-val" style="color:var(--acerto-placar)">${totalAcertos}</div><div class="stat-label">Acertos totais</div></div>`;
+
+  // Cards por jogador
+  document.getElementById('jogador-cards').innerHTML=jogs.map(jog=>{
+    const s=jogadorStats(jog);
+    return`<div class="jog-card">
+      <div class="jog-card-name">${jog}<span class="jog-card-pts" style="color:var(--amarelo)">${s.total}pts</span></div>
+      <div class="jog-stat-row"><span>🎯 Placar exato</span><span class="jog-stat-val" style="color:var(--acerto-placar)">${s.acertouPlacar}</span></div>
+      <div class="jog-stat-row"><span>✓ Acertou vencedor</span><span class="jog-stat-val" style="color:var(--amarelo)">${s.acertouVencedor}</span></div>
+      <div class="jog-stat-row"><span>✗ Errou</span><span class="jog-stat-val" style="color:var(--erro)">${s.errou}</span></div>
+      <div class="jog-stat-row"><span>— Sem palpite</span><span class="jog-stat-val" style="color:var(--muted)">${s.semPalpite}</span></div>
+      <div class="jog-stat-row"><span>📈 Aproveitamento</span><span class="jog-stat-val">${s.aproveitamento}%</span></div>
+      <div class="jog-bar"><div class="jog-bar-fill" style="width:${s.aproveitamento}%"></div></div>
+    </div>`;
+  }).join('');
+
+  // Tabela
+  document.getElementById('painel-thead').innerHTML=`<tr>
+    <th>Data</th><th>Jogo</th><th>Resultado</th>
+    ${jogs.map(j=>`<th>${j}</th>`).join('')}
+  </tr>`;
+
+  const badgeTpl=(tipo)=>{
+    const map={placar:'ptb-placar',vencedor:'ptb-vencedor',erro:'ptb-erro',sem:'ptb-sem',pendente:'ptb-aguard'};
+    const lbl={placar:'🎯 +3pts',vencedor:'✓ +1pt',erro:'✗ 0pts',sem:'—',pendente:'⏳'};
+    return`<span class="pt-badge ${map[tipo]}">${lbl[tipo]}</span>`;
+  };
+
+  const rows=jogos.map(j=>{
+    const res=state.resultados[j.id];
+    return`<tr>
+      <td class="pt-jogo" style="color:var(--muted);font-size:11px">${j.data}</td>
+      <td class="pt-jogo">${flagImg(j.casa)} ${j.casa} × ${j.fora} ${flagImg(j.fora)}</td>
+      <td class="pt-resultado">${res?`${res.c}–${res.f}`:'—'}</td>
+      ${jogs.map(jog=>{
+        const p=(state.palpites[j.id]||{})[jog];
+        const tipo=getRT(p,res);
+        return`<td><div style="display:flex;flex-direction:column;gap:3px">
+          <span class="pt-palpite" style="color:var(--muted)">${p!=null?`${p.c}×${p.f}`:'—'}</span>
+          ${badgeTpl(tipo)}
+        </div></td>`;
+      }).join('')}
+    </tr>`;
+  }).join('');
+
+  document.getElementById('painel-tbody').innerHTML=rows||`<tr class="empty-row"><td colspan="${3+jogs.length}">Nenhum jogo encontrado com esses filtros</td></tr>`;
+};
+
+window.limparFiltros=()=>{
+  ['f-jogador','f-fase','f-time','f-resultado'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  renderPainel();
+};
+
+// ─── ACTIONS ─────────────────────────────────────────────────────────────────
+window.setFase=(fase,btn)=>{
+  state.fase=fase; state.selectedGame=null; state.modoPainel=false;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('main-cols').style.display='grid';
+  document.getElementById('painel-wrap').style.display='none';
+  document.getElementById('palpites-panel').innerHTML=`<div class="no-selection"><div class="icon">👈</div><p>Selecione um jogo ao lado</p></div>`;
+  document.getElementById('comp-panel').innerHTML=`<div class="no-selection"><div class="icon">📋</div><p>Selecione um jogo para ver<br>os palpites comparados</p></div>`;
+  renderJogos();
+};
+
+window.setPainel=(btn)=>{
+  state.modoPainel=true; state.selectedGame=null;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('main-cols').style.display='none';
+  document.getElementById('painel-wrap').style.display='block';
+  populateFiltros();
+  renderPainel();
+};
+
+window.selectGame=(fase,id)=>{
+  state.selectedGame=JOGOS[state.fase].find(j=>j.id===id);
+  renderJogos(); renderPalpites(state.selectedGame); renderComp(state.selectedGame);
+};
+window.salvarPalpite=async(gameId,jogador)=>{
+  const c=document.getElementById(`p_${jogador}_c`).value;
+  const f=document.getElementById(`p_${jogador}_f`).value;
+  if(c===''||f==='') return alert('Preencha o placar!');
+  await fbSet(`bolao2026/palpites/${gameId}/${jogador}`,{c:parseInt(c),f:parseInt(f)});
+};
+window.salvarResultado=async(gameId)=>{
+  const c=document.getElementById('res_c').value;
+  const f=document.getElementById('res_f').value;
+  if(c===''||f==='') return alert('Preencha o resultado!');
+  await fbSet(`bolao2026/resultados/${gameId}`,{c:parseInt(c),f:parseInt(f)});
+};
+window.addParticipante=async()=>{
+  const inp=document.getElementById('novo-participante');
+  const nome=inp.value.trim();
+  if(!nome) return;
+  if(state.participantes.includes(nome)) return alert('Já existe!');
+  state.participantes.push(nome);
+  await fbSet('bolao2026/participantes',state.participantes);
+  inp.value='';
+};
+window.removeParticipante=async(nome)=>{
+  if(state.participantes.length<=1) return alert('Precisa ter ao menos 1 participante!');
+  if(!confirm(`Remover ${nome}?`)) return;
+  state.participantes=state.participantes.filter(p=>p!==nome);
+  await fbSet('bolao2026/participantes',state.participantes);
+};
+</script>
+</body>
+</html>
