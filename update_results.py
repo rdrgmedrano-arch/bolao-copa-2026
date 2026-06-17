@@ -32,8 +32,8 @@ ALIASES = {
     "Canada":"Canadá",
     "Ivory Coast":"Costa do Marfim","Côte d'Ivoire":"Costa do Marfim",
     "Curaçao":"Curaçao","Curacao":"Curaçao",
-    "DR Congo":"Congo DR","Democratic Republic of Congo":"Congo DR",
-    "New Zealand":"Nova Zelândia","Cape Verde":"Cabo Verde",
+    "DR Congo":"Congo DR","Democratic Republic of Congo":"Congo DR","Congo DR":"Congo DR","Congo, DR":"Congo DR",
+    "New Zealand":"Nova Zelândia","Cape Verde":"Cabo Verde","Cape Verde Islands":"Cabo Verde","Spain":"Espanha",
     "Saudi Arabia":"Arábia Saudita","South Africa":"África do Sul",
 }
 
