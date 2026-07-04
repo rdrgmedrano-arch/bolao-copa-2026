@@ -53,6 +53,7 @@
   .tab.stats-tab{color:var(--azul)}.tab.stats-tab.active{color:var(--azul);border-bottom-color:var(--azul)}
   .tab.grupos-tab{color:var(--verde)}.tab.grupos-tab.active{color:var(--verde);border-bottom-color:var(--verde)}
   .tab.bracket-tab{color:#c2410c}.tab.bracket-tab.active{color:#c2410c;border-bottom-color:#c2410c}
+  .tab.chave-tab{color:#0e7490}.tab.chave-tab.active{color:#0e7490;border-bottom-color:#0e7490}
   .tab.painel-tab{color:var(--roxo)}.tab.painel-tab.active{color:var(--roxo);border-bottom-color:var(--roxo)}
 
   .main{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;height:calc(100vh - 160px)}
@@ -226,10 +227,39 @@
   .palpite-confronto-jog{font-weight:600;color:var(--muted)}
   .palpite-confronto-pick{font-family:'Roboto Mono',monospace;font-weight:600}
 
-  .col::-webkit-scrollbar,.painel-wrap::-webkit-scrollbar,.stats-wrap::-webkit-scrollbar,.grupos-wrap::-webkit-scrollbar,.bracket-wrap::-webkit-scrollbar{width:4px}
-  .col::-webkit-scrollbar-thumb,.painel-wrap::-webkit-scrollbar-thumb,.stats-wrap::-webkit-scrollbar-thumb,.grupos-wrap::-webkit-scrollbar-thumb,.bracket-wrap::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+  .col::-webkit-scrollbar,.painel-wrap::-webkit-scrollbar,.stats-wrap::-webkit-scrollbar,.grupos-wrap::-webkit-scrollbar,.bracket-wrap::-webkit-scrollbar,.chave-wrap::-webkit-scrollbar{width:4px;height:8px}
+  .col::-webkit-scrollbar-thumb,.painel-wrap::-webkit-scrollbar-thumb,.stats-wrap::-webkit-scrollbar-thumb,.grupos-wrap::-webkit-scrollbar-thumb,.bracket-wrap::-webkit-scrollbar-thumb,.chave-wrap::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
   input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
-  @media(max-width:768px){.main{grid-template-columns:1fr;height:auto}.col{border-right:none;border-bottom:1px solid var(--border);height:380px}.painel-wrap,.stats-wrap,.grupos-wrap,.bracket-wrap{height:auto}}
+  @media(max-width:768px){.main{grid-template-columns:1fr;height:auto}.col{border-right:none;border-bottom:1px solid var(--border);height:380px}.painel-wrap,.stats-wrap,.grupos-wrap,.bracket-wrap,.chave-wrap{height:auto}}
+
+  /* ── CHAVEAMENTO VISUAL (árvore estilo quadro físico) ── */
+  .chave-wrap{padding:18px;overflow:auto;height:calc(100vh - 160px);background:linear-gradient(180deg,#eef2f5,#e4e9ee)}
+  .chave-board{min-width:1500px;position:relative}
+  .chave-title-top{text-align:center;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:var(--azul);margin-bottom:4px}
+  .chave-sub-top{text-align:center;font-size:11px;color:var(--muted);font-family:'Roboto Mono',monospace;margin-bottom:16px;text-transform:uppercase;letter-spacing:2px}
+  .chave-grid{display:grid;grid-template-columns:repeat(4,1fr) 1.3fr repeat(4,1fr);align-items:center;gap:0;min-height:900px}
+  .chave-col{display:flex;flex-direction:column;justify-content:space-around;height:100%;padding:0 6px;position:relative}
+  .chave-slot{position:relative;display:flex;flex-direction:column;justify-content:center;flex:1}
+  .chave-box{background:#12203f;border:1px solid #24406e;border-radius:6px;padding:5px 8px;margin:3px 0;display:flex;align-items:center;gap:6px;min-height:26px;box-shadow:0 1px 3px rgba(0,0,0,0.3);position:relative}
+  .chave-box.vencedor-box{background:#0e7490;border-color:#155e75}
+  .chave-box .flg{width:16px;height:12px;object-fit:cover;border-radius:2px;flex-shrink:0}
+  .chave-box .nome{font-size:10.5px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+  .chave-box .nome.tbd{color:rgba(255,255,255,0.35);font-weight:500;font-style:italic}
+  .chave-pair{border:1px solid #1c2f52;border-radius:8px;padding:2px;background:rgba(255,255,255,0.02)}
+  .chave-meta-mini{font-size:8px;color:#8a9bbf;font-family:'Roboto Mono',monospace;text-align:center;padding:1px 0 3px;letter-spacing:0.5px}
+  .chave-connector{position:absolute;border-color:#7a8aa8;pointer-events:none}
+  .chave-final-box{background:linear-gradient(135deg,#FFDF00,#f5c800);border:2px solid #002776;border-radius:10px;width:130px;height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto;box-shadow:0 4px 14px rgba(0,0,0,0.25)}
+  .chave-final-box .ft{font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--azul);letter-spacing:2px}
+  .chave-final-box .fx{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--azul);margin:4px 0}
+  .chave-final-teams{display:flex;flex-direction:column;gap:6px;margin-top:20px;width:100%;padding:0 14px}
+  .chave-final-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px}
+  .chave-campeao{margin-top:10px;text-align:center}
+  .chave-campeao .cl{font-size:9px;color:var(--muted);font-family:'Roboto Mono',monospace;letter-spacing:1px;text-transform:uppercase}
+  .chave-campeao .cn{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--verde-dark);letter-spacing:1px;margin-top:2px}
+  .chave-bronze-strip{margin-top:24px;display:flex;justify-content:center}
+  .chave-bronze-card{background:#fff;border:1px solid var(--border);border-radius:8px;padding:8px 14px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow)}
+  .chave-bronze-label{font-family:'Bebas Neue',sans-serif;font-size:11px;color:#b8860b;letter-spacing:1px}
+  .chave-stage-label{text-align:center;font-family:'Bebas Neue',sans-serif;font-size:10px;color:#5a6f94;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
 </style>
 </head>
 <body>
@@ -270,6 +300,7 @@
   <button class="tab stats-tab" onclick="setStats(this)" style="margin-left:auto">Estatísticas</button>
   <button class="tab grupos-tab" onclick="setGrupos(this)">Grupos</button>
   <button class="tab bracket-tab" onclick="setBracket(this)">Mata-Mata</button>
+  <button class="tab chave-tab" onclick="setChave(this)">Chaveamento</button>
   <button class="tab painel-tab" onclick="setPainel(this)">Painel</button>
 </div>
 
@@ -329,6 +360,10 @@
   <div id="bracket-content"></div>
 </div>
 
+<div class="chave-wrap" id="chave-wrap" style="display:none">
+  <div class="chave-board" id="chave-board"></div>
+</div>
+
 <div class="painel-wrap" id="painel-wrap" style="display:none">
   <div class="section-title">Painel de Palpites</div>
   <div class="painel-filtros">
@@ -386,6 +421,8 @@ const FC={'México':'mx','África do Sul':'za','Coreia do Sul':'kr','Tchéquia':
   'Gana':'gh','Panamá':'pa'};
 function fi(t){const c=FC[t];if(!c)return'<span style="font-size:16px">🏳️</span>';
   return`<img src="https://flagcdn.com/16x12/${c}.png" class="team-flag-img" alt="${t}" onerror="this.style.display='none'">`;}
+function fiMini(t){const c=FC[t];if(!c)return'';
+  return`<img src="https://flagcdn.com/16x12/${c}.png" class="flg" alt="${t}" onerror="this.style.display='none'">`;}
 
 const JOGOS={
   grupos:[
@@ -467,7 +504,6 @@ const JOGOS={
 const TODOS_JOGOS=Object.entries(JOGOS).flatMap(([fase,js])=>js.map(j=>({...j,fase})));
 const TODOS_TIMES=[...new Set(TODOS_JOGOS.flatMap(j=>[j.casa,j.fora]).filter(t=>t!=='TBD'))].sort();
 
-// Mapeia cada grupo (A..L) para seus 4 times, a partir dos jogos da fase de grupos
 const GRUPOS_TIMES={};
 JOGOS.grupos.forEach(j=>{
   if(!GRUPOS_TIMES[j.grupo]) GRUPOS_TIMES[j.grupo]=new Set();
@@ -477,8 +513,6 @@ JOGOS.grupos.forEach(j=>{
 Object.keys(GRUPOS_TIMES).forEach(g=>GRUPOS_TIMES[g]=[...GRUPOS_TIMES[g]]);
 const NOMES_GRUPOS=Object.keys(GRUPOS_TIMES).sort();
 
-// Estrutura do mata-mata: cada confronto referencia de onde vêm os times (grupo+posição ou vencedor de outro confronto)
-// Posição: '1A' = 1º do grupo A, '2A' = 2º do grupo A, '3-1'..'3-8' = melhores 3ºs colocados (slot 1 a 8)
 const BRACKET={
   r32:[
     {id:'r32a',casaFixo:'África do Sul',foraFixo:'Canadá',data:'28/06',hora:'16:00',estadio:'Inglewood, EUA'},
@@ -524,7 +558,7 @@ const BRACKET={
 const BRACKET_STAGE_LABEL={r32:'Oitavas (Round of 32)',r16:'Round of 16',quartas:'Quartas de Final',semi:'Semifinais',bronze:'Disputa de 3º Lugar',final:'Final'};
 const BRACKET_ORDER=['r32','r16','quartas','semi','bronze','final'];
 
-let state={fase:'grupos',selectedGame:null,modoPainel:false,modoStats:false,modoGrupos:false,modoBracket:false,
+let state={fase:'grupos',selectedGame:null,modoPainel:false,modoStats:false,modoGrupos:false,modoBracket:false,modoChave:false,
   bracketPicks:{},bracketResults:{},
   participantes:['Rodrigo','Rafael','Leo'],palpites:{},resultados:{}};
 
@@ -543,7 +577,6 @@ async function fbSet(path,val){
   await set(ref(db,path),val);
 }
 
-// tipos: placar | vencedor | gols | time | invertido | erro | sem | pendente
 function getRT(p,res){
   if(!res) return 'pendente';
   if(!p) return 'sem';
@@ -574,7 +607,6 @@ function calcPtsPalpite(p,res){
   return pts;
 }
 
-// ─── PONTUAÇÃO DO MATA-MATA ───────────────────────────────────────────────────
 const BRACKET_PTS_POR_FASE={r32:2,r16:3,quartas:5,semi:8,bronze:5,final:13};
 
 function calcPtsBracket(jogs){
@@ -653,6 +685,7 @@ function render(){
   else if(state.modoStats) renderStats();
   else if(state.modoGrupos) renderGrupos();
   else if(state.modoBracket) renderBracket();
+  else if(state.modoChave) renderChave();
   else{renderJogos();if(state.selectedGame){renderPalpites(state.selectedGame);renderComp(state.selectedGame);}}
 }
 
@@ -881,7 +914,6 @@ function renderStats(){
       </div>`;}).join('');
 }
 
-// ─── CLASSIFICAÇÃO DE GRUPOS ──────────────────────────────────────────────────
 function calcClassificacaoGrupo(grupo){
   const times=GRUPOS_TIMES[grupo]||[];
   const tab={};
@@ -946,9 +978,7 @@ function renderGrupos(){
   </div>`;
 }
 
-// ─── MATA-MATA / BRACKET ──────────────────────────────────────────────────────
 function resolveSlot(slot){
-  // slot tipo '1A','2A' = posição no grupo; '3-N' = Nº melhor terceiro
   if(/^3-\d$/.test(slot)){
     const n=parseInt(slot.split('-')[1]);
     const t=getTerceirosColocados()[n-1];
@@ -960,17 +990,7 @@ function resolveSlot(slot){
   return tab[pos-1]?tab[pos-1].time:null;
 }
 
-function getTimeNoConfronto(confId,lado){
-  // Procura o confronto em qualquer estágio do bracket
-  for(const stage of BRACKET_ORDER){
-    const conf=BRACKET[stage].find(c=>c.id===confId);
-    if(!conf) continue;
-    return getVencedorConfronto(conf,lado);
-  }
-  return null;
-}
 function getVencedorConfronto(conf,lado){
-  // Se já tem resultado registrado no bracket (placar ou pênaltis), usa ele; senão usa o palpite mais "popular" não — usamos resultado oficial.
   const r=state.bracketResults[conf.id];
   if(r&&r.vencedor) return lado?(lado==='casa'?r.timeCasa:r.timeFora):r.vencedor;
   return null;
@@ -995,6 +1015,11 @@ function getTimesConfronto(conf){
     timeFora=r2&&r2.perdedor?r2.perdedor:null;
   }
   return{timeCasa,timeFora};
+}
+
+function findConf(id){
+  for(const s of BRACKET_ORDER){const c=BRACKET[s].find(x=>x.id===id);if(c)return c;}
+  return null;
 }
 
 function renderBracket(){
@@ -1061,6 +1086,91 @@ function renderBracket(){
   document.getElementById('bracket-content').innerHTML=html;
 }
 
+// ─── CHAVEAMENTO VISUAL (árvore, estilo quadro físico) ─────────────────────
+function chaveTeamBox(nome,ganhou){
+  if(!nome) return `<div class="chave-box"><span class="nome tbd">A definir</span></div>`;
+  const cls = ganhou ? 'chave-box vencedor-box' : 'chave-box';
+  return `<div class="${cls}">${fiMini(nome)}<span class="nome">${nome}</span></div>`;
+}
+
+function chaveConfCard(confId){
+  const conf=findConf(confId);
+  if(!conf) return '';
+  const{timeCasa,timeFora}=getTimesConfronto(conf);
+  const res=state.bracketResults[confId];
+  const vencC = res&&res.vencedor&&timeCasa&&res.vencedor===timeCasa;
+  const vencF = res&&res.vencedor&&timeFora&&res.vencedor===timeFora;
+  return `<div class="chave-pair">
+    ${chaveTeamBox(timeCasa,vencC)}
+    ${chaveTeamBox(timeFora,vencF)}
+  </div>
+  <div class="chave-meta-mini">${conf.data} ${conf.hora}</div>`;
+}
+
+function renderChave(){
+  const r32=BRACKET.r32;
+  const leftR32=r32.slice(0,8), rightR32=r32.slice(8,16);
+  const r16=BRACKET.r16;
+  const leftR16=r16.slice(0,4), rightR16=r16.slice(4,8);
+  const quartas=BRACKET.quartas;
+  // quartas order: q1(from r16a,r16b) q2(from r16c,r16d) left side; q3,q4 right side
+  const leftQuartas=[quartas[0],quartas[1]];
+  const rightQuartas=[quartas[3],quartas[2]]; // q4,q3 to keep mirrored visual order matching r16e-h
+  const semi=BRACKET.semi;
+  const leftSemi=[semi[0]];
+  const rightSemi=[semi[1]];
+  const finalConf=BRACKET.final[0];
+  const bronzeConf=BRACKET.bronze[0];
+
+  const colHTML=(confs)=>confs.map(c=>`<div class="chave-slot">${chaveConfCard(c.id)}</div>`).join('');
+
+  const finalRes=state.bracketResults[finalConf.id];
+  const{timeCasa:fc,timeFora:ff}=getTimesConfronto(finalConf);
+  const campeao=finalRes&&finalRes.vencedor?finalRes.vencedor:null;
+
+  const bronzeRes=state.bracketResults[bronzeConf.id];
+  const{timeCasa:bc,timeFora:bf}=getTimesConfronto(bronzeConf);
+  const terceiro=bronzeRes&&bronzeRes.vencedor?bronzeRes.vencedor:null;
+
+  document.getElementById('chave-board').innerHTML=`
+    <div class="chave-title-top">Copa do Mundo 2026</div>
+    <div class="chave-sub-top">Fase Eliminatória</div>
+    <div class="chave-grid">
+      <div class="chave-col"><div class="chave-stage-label">Oitavas</div>${colHTML(leftR32)}</div>
+      <div class="chave-col"><div class="chave-stage-label">Quartas</div>${colHTML(leftR16)}</div>
+      <div class="chave-col"><div class="chave-stage-label">Semi</div>${colHTML(leftQuartas)}</div>
+      <div class="chave-col"><div class="chave-stage-label">Final</div>${colHTML(leftSemi)}</div>
+      <div class="chave-col">
+        <div class="chave-final-wrap">
+          <div class="chave-final-box">
+            <div class="ft">FINAL</div>
+            <div class="fx">×</div>
+          </div>
+          <div class="chave-final-teams" style="max-width:170px">
+            ${chaveTeamBox(fc,finalRes&&finalRes.vencedor===fc)}
+            ${chaveTeamBox(ff,finalRes&&finalRes.vencedor===ff)}
+          </div>
+          <div class="chave-meta-mini">${finalConf.data} ${finalConf.hora} • ${finalConf.estadio}</div>
+          ${campeao?`<div class="chave-campeao"><div class="cl">🏆 Campeão</div><div class="cn">${campeao}</div></div>`:''}
+        </div>
+      </div>
+      <div class="chave-col"><div class="chave-stage-label">Final</div>${colHTML(rightSemi)}</div>
+      <div class="chave-col"><div class="chave-stage-label">Semi</div>${colHTML(rightQuartas)}</div>
+      <div class="chave-col"><div class="chave-stage-label">Quartas</div>${colHTML(rightR16)}</div>
+      <div class="chave-col"><div class="chave-stage-label">Oitavas</div>${colHTML(rightR32)}</div>
+    </div>
+    <div class="chave-bronze-strip">
+      <div class="chave-bronze-card">
+        <span class="chave-bronze-label">🥉 3º LUGAR</span>
+        ${chaveTeamBox(bc,bronzeRes&&bronzeRes.vencedor===bc)}
+        <span style="font-family:'Bebas Neue',sans-serif;color:var(--muted)">×</span>
+        ${chaveTeamBox(bf,bronzeRes&&bronzeRes.vencedor===bf)}
+        <span class="chave-meta-mini" style="padding:0">${bronzeConf.data} ${bronzeConf.hora}</span>
+        ${terceiro?`<span style="font-family:'Bebas Neue',sans-serif;font-size:12px;color:var(--verde-dark);margin-left:8px">🥉 ${terceiro}</span>`:''}
+      </div>
+    </div>`;
+}
+
 window.saveBracketPick=async(confId,jog,vencedor)=>{
   if(!vencedor) return;
   await fbSet(`bolao2026/bracketPicks/${confId}/${jog}`,vencedor);
@@ -1069,9 +1179,7 @@ window.saveBracketRes=async confId=>{
   const sel=document.getElementById(`vw_${confId}`);
   const vencedor=sel.value;
   if(!vencedor) return alert('Escolha o vencedor!');
-  // descobre o perdedor pra alimentar a disputa de 3º lugar
-  let stage=null,conf=null;
-  for(const s of BRACKET_ORDER){const c=BRACKET[s].find(x=>x.id===confId);if(c){stage=s;conf=c;break;}}
+  const conf=findConf(confId);
   const{timeCasa,timeFora}=getTimesConfronto(conf);
   const perdedor=vencedor===timeCasa?timeFora:timeCasa;
   await fbSet(`bolao2026/bracketResults/${confId}`,{vencedor,perdedor,timeCasa,timeFora});
@@ -1121,12 +1229,13 @@ window.renderPainel=function(){
 window.limparFiltros=()=>{['f-jogador','f-time','f-resultado'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});renderPainel();};
 
 function hideAllPanels(){
-  state.modoPainel=false;state.modoStats=false;state.modoGrupos=false;state.modoBracket=false;
+  state.modoPainel=false;state.modoStats=false;state.modoGrupos=false;state.modoBracket=false;state.modoChave=false;
   document.getElementById('main-cols').style.display='none';
   document.getElementById('painel-wrap').style.display='none';
   document.getElementById('stats-wrap').style.display='none';
   document.getElementById('grupos-wrap').style.display='none';
   document.getElementById('bracket-wrap').style.display='none';
+  document.getElementById('chave-wrap').style.display='none';
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
 }
 window.setFase=(fase,btn)=>{
@@ -1165,6 +1274,13 @@ window.setBracket=btn=>{
   btn.classList.add('active');
   document.getElementById('bracket-wrap').style.display='block';
   renderBracket();
+};
+window.setChave=btn=>{
+  hideAllPanels();
+  state.modoChave=true;state.selectedGame=null;
+  btn.classList.add('active');
+  document.getElementById('chave-wrap').style.display='block';
+  renderChave();
 };
 window.selGame=(fase,id)=>{
   state.selectedGame=JOGOS[state.fase].find(j=>j.id===id);
