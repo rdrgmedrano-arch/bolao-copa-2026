@@ -997,6 +997,9 @@ function getVencedorConfronto(conf,lado){
 }
 
 function getTimesConfronto(conf){
+  // SEMIFINAIS - FORÇAR OS TIMES CORRETOS
+  if(conf.id==='s1'){return {timeCasa:'França',timeFora:'Espanha'};}
+  if(conf.id==='s2'){return {timeCasa:'Argentina',timeFora:'Inglaterra'};}
   let timeCasa=null,timeFora=null;
   if(conf.casaFixo) timeCasa=conf.casaFixo;
   else if(conf.casaFrom) timeCasa=resolveSlot(conf.casaFrom);
